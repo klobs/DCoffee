@@ -16,6 +16,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import watchdog.WatchdogThread;
+
 import de.tu.dresden.dud.dc.Connection;
 import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.inf.dud.libmulticastdc.DCMulticastChannel;
@@ -60,11 +62,11 @@ public class MainWindow extends javax.swing.JPanel {
 		
 		BasicConfigurator.configure();
 		
-	    Logger.getRootLogger().setLevel(Level.DEBUG);
+	    Logger.getRootLogger().setLevel(Level.INFO);
 		
 		
 		Participant part = new Participant("DCoffee");
-		Connection c = part.doAllTheThingsToBecomeActive("dud73", Connection.DEFAULTPORT);
+		Connection c = part.doAllTheThingsToBecomeActive("localhost", Connection.DEFAULTPORT);
 		
 		DCMulticastParticipant dcmc = new DCMulticastParticipant();
 		dcmc.setConnection(c);
@@ -97,6 +99,8 @@ public class MainWindow extends javax.swing.JPanel {
 		}
 		
 		doDCSetup();
+		Thread t = new Thread(new WatchdogThread(channel,buttonCoffeeIndicator),"CoffeeWatchdogThread");
+		t.start();
 	}
 	
 	public AbstractAction getActionDemandCoffee() {
@@ -105,7 +109,6 @@ public class MainWindow extends javax.swing.JPanel {
 				private static final long serialVersionUID = -3360043336423152790L;
 
 				public void actionPerformed(ActionEvent evt) {
-//				buttonCoffeeIndicator.setIcon(new ImageIcon(getClass().getClassLoader().getResource("gui/kaffee_20.png")));
 				long time = System.currentTimeMillis();
 				channel.write("Hallo".getBytes());
 					
@@ -114,5 +117,4 @@ public class MainWindow extends javax.swing.JPanel {
 		}
 		return actionDemandCoffee;
 	}
-
 }
