@@ -16,7 +16,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import watchdog.WatchdogThread;
+import watchdog.WatchdogChannelThread;
+import watchdog.WatchdogCoffeeLevelThread;
 
 import de.tu.dresden.dud.dc.Connection;
 import de.tu.dresden.dud.dc.Participant;
@@ -41,6 +42,7 @@ public class MainWindow extends javax.swing.JPanel {
 	private AbstractAction 		actionDemandCoffee;
 	private JButton 			buttonCoffeeIndicator;
 	DCMulticastChannel			channel = null;
+	private long				random;
 	/**
 	* Auto-generated main method to display this 
 	* JPanel inside a new JFrame.
@@ -55,6 +57,9 @@ public class MainWindow extends javax.swing.JPanel {
 	
 	public MainWindow() {
 		super();
+		
+		random = System.currentTimeMillis(); 
+		
 		initGUI();
 	}
 	
@@ -72,7 +77,7 @@ public class MainWindow extends javax.swing.JPanel {
 		dcmc.setConnection(c);
 		dcmc.setParticipant(part);
 		
-		channel = dcmc.listenToMulicastChannel(0xdeadbeef);
+		channel = dcmc.listenToMulicastChannel(0xdcaffee);
 	}
 	
 	private void initGUI() {
@@ -99,8 +104,11 @@ public class MainWindow extends javax.swing.JPanel {
 		}
 		
 		doDCSetup();
-		Thread t = new Thread(new WatchdogThread(channel,buttonCoffeeIndicator),"CoffeeWatchdogThread");
-		t.start();
+		
+		WatchdogCoffeeLevelThread wdclt = new WatchdogCoffeeLevelThread(buttonCoffeeIndicator);
+		
+		(new Thread(wdclt,"CoffeeLevelWatchdogThread")).start();
+		(new Thread(new WatchdogChannelThread(channel, wdclt),"CoffeeWatchdogThread")).start();
 	}
 	
 	public AbstractAction getActionDemandCoffee() {
@@ -109,8 +117,8 @@ public class MainWindow extends javax.swing.JPanel {
 				private static final long serialVersionUID = -3360043336423152790L;
 
 				public void actionPerformed(ActionEvent evt) {
-				long time = System.currentTimeMillis();
-				channel.write("Hallo".getBytes());
+				
+				channel.write(("kaffepause-" + String.valueOf(random)).getBytes());
 					
 				}
 			};
