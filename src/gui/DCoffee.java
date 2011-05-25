@@ -36,7 +36,7 @@ import de.tu.dresden.inf.dud.libmulticastdc.DCMulticastParticipant;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class MainWindow extends javax.swing.JPanel {
+public class DCoffee extends javax.swing.JPanel {
 
 	private static final long 	serialVersionUID = -2278436951424873713L;
 	private AbstractAction 		actionDemandCoffee;
@@ -49,13 +49,13 @@ public class MainWindow extends javax.swing.JPanel {
 	*/
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
-		frame.getContentPane().add(new MainWindow());
+		frame.getContentPane().add(new DCoffee());
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
 	}
 	
-	public MainWindow() {
+	public DCoffee() {
 		super();
 		
 		random = System.currentTimeMillis(); 
@@ -71,7 +71,7 @@ public class MainWindow extends javax.swing.JPanel {
 		
 		
 		Participant part = new Participant("DCoffee");
-		Connection c = part.doAllTheThingsToBecomeActive("localhost", Connection.DEFAULTPORT);
+		Connection c = part.establishNewConnection("dud73", Connection.DEFAULTPORT);
 		
 		DCMulticastParticipant dcmc = new DCMulticastParticipant();
 		dcmc.setConnection(c);
