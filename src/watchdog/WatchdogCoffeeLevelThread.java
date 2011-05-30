@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 public class WatchdogCoffeeLevelThread implements Runnable {
 
@@ -35,7 +36,17 @@ public class WatchdogCoffeeLevelThread implements Runnable {
 			currentCoffeeLevel--;
 		else 
 			currentCoffeeLevel = 0;
-		assocCoffeeButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(coffeeLevel[currentCoffeeLevel])));
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					assocCoffeeButton.setIcon(new ImageIcon(getClass()
+							.getClassLoader().getResource(
+									coffeeLevel[currentCoffeeLevel])));
+				}
+			});
+		} catch (Exception e) {
+
+		}
 	}
 	
 	public void increaseCoffeeLevel(){
@@ -45,7 +56,17 @@ public class WatchdogCoffeeLevelThread implements Runnable {
 			currentCoffeeLevel++;
 		else 
 			currentCoffeeLevel = 6;
-		assocCoffeeButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(coffeeLevel[currentCoffeeLevel])));
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					assocCoffeeButton.setIcon(new ImageIcon(getClass()
+							.getClassLoader().getResource(
+									coffeeLevel[currentCoffeeLevel])));
+				}
+			});
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	public void put(String m){
