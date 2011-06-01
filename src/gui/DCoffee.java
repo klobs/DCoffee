@@ -112,7 +112,7 @@ public class DCoffee extends javax.swing.JPanel implements Observer {
 		
 		doDCSetup();
 		
-		WatchdogCoffeeLevelThread wdclt = new WatchdogCoffeeLevelThread(buttonCoffeeIndicator);
+		WatchdogCoffeeLevelThread wdclt = new WatchdogCoffeeLevelThread(getActionDemandCoffee());
 		
 		(new Thread(wdclt,"CoffeeLevelWatchdogThread")).start();
 		(new Thread(new WatchdogChannelThread(channel, wdclt),"CoffeeWatchdogThread")).start();

@@ -3,21 +3,21 @@ package watchdog;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
 public class WatchdogCoffeeLevelThread implements Runnable {
 
 	
-	private JButton						assocCoffeeButton;
+	private AbstractAction				assocCoffeeAction;
 	private LinkedBlockingQueue<String> messageQueue = new LinkedBlockingQueue<String>();
 	private String[]					coffeeLevel = new String[7];
 	private int							currentCoffeeLevel = 0;
 
 	
-	public WatchdogCoffeeLevelThread(JButton coffeebutton) {
-		assocCoffeeButton = coffeebutton;
+	public WatchdogCoffeeLevelThread(AbstractAction coffeebutton) {
+		assocCoffeeAction = coffeebutton;
 		
 		coffeeLevel[0] = "gui/kaffee_0.png";
 		coffeeLevel[1] = "gui/kaffee_20.png";
@@ -39,9 +39,12 @@ public class WatchdogCoffeeLevelThread implements Runnable {
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-					assocCoffeeButton.setIcon(new ImageIcon(getClass()
+					assocCoffeeAction.putValue(AbstractAction.LARGE_ICON_KEY, new ImageIcon(getClass()
 							.getClassLoader().getResource(
 									coffeeLevel[currentCoffeeLevel])));
+//					setIcon(new ImageIcon(getClass()
+//							.getClassLoader().getResource(
+//									coffeeLevel[currentCoffeeLevel])));
 				}
 			});
 		} catch (Exception e) {
@@ -59,9 +62,13 @@ public class WatchdogCoffeeLevelThread implements Runnable {
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-					assocCoffeeButton.setIcon(new ImageIcon(getClass()
-							.getClassLoader().getResource(
-									coffeeLevel[currentCoffeeLevel])));
+					assocCoffeeAction.putValue(
+							AbstractAction.LARGE_ICON_KEY, new ImageIcon(
+									getClass().getClassLoader().getResource(
+											coffeeLevel[currentCoffeeLevel])));
+//					setIcon(new ImageIcon(getClass()
+//							.getClassLoader().getResource(
+//									coffeeLevel[currentCoffeeLevel])));
 				}
 			});
 		} catch (Exception e) {
