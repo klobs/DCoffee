@@ -2,7 +2,6 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -21,6 +20,7 @@ import org.apache.log4j.Logger;
 
 import watchdog.WatchdogChannelThread;
 import watchdog.WatchdogCoffeeLevelThread;
+import watchdog.WatchdogConnectionThread;
 
 import de.tu.dresden.dud.dc.Connection;
 import de.tu.dresden.dud.dc.Participant;
@@ -82,6 +82,9 @@ public class DCoffee extends javax.swing.JPanel implements Observer {
 		DCMulticastParticipant dcmc = new DCMulticastParticipant();
 		dcmc.setConnection(c);
 		dcmc.setParticipant(part);
+		
+		Thread t = new Thread(new WatchdogConnectionThread(c, buttonCoffeeIndicator, getActionReconnect()), "WatchdogConnection");
+		t.start();
 		
 		participant = dcmc;
 		channel = dcmc.listenToMulicastChannel(0xdcaffee);
@@ -154,11 +157,11 @@ public class DCoffee extends javax.swing.JPanel implements Observer {
 	
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		if (arg0 instanceof Participant){
-			// Connection crashed
-			if (arg1 instanceof IOException){
-				buttonCoffeeIndicator.setAction(getActionReconnect());
-			}
-		}
+//		if (arg0 instanceof Participant){
+//			// Connection crashed
+//			if (arg1 instanceof IOException){
+//				buttonCoffeeIndicator.setAction(getActionReconnect());
+//			}
+//		}
 	}
 }
