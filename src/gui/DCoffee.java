@@ -2,6 +2,9 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.AbstractAction;
 import javax.swing.GroupLayout;
@@ -36,11 +39,13 @@ import de.tu.dresden.inf.dud.libmulticastdc.DCMulticastParticipant;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class DCoffee extends javax.swing.JPanel {
+public class DCoffee extends javax.swing.JPanel implements Observer {
 
 	private static final long 	serialVersionUID = -2278436951424873713L;
 	private AbstractAction 		actionDemandCoffee;
+	private AbstractAction		actionReconnect;
 	private JButton 			buttonCoffeeIndicator;
+	DCMulticastParticipant		participant = null;
 	DCMulticastChannel			channel = null;
 	private long				random;
 	/**
@@ -71,12 +76,14 @@ public class DCoffee extends javax.swing.JPanel {
 		
 		
 		Participant part = new Participant("DCoffee");
+		part.addObserver(this);
 		Connection c = part.establishNewConnection("dud73", Connection.DEFAULTPORT);
 		
 		DCMulticastParticipant dcmc = new DCMulticastParticipant();
 		dcmc.setConnection(c);
 		dcmc.setParticipant(part);
 		
+		participant = dcmc;
 		channel = dcmc.listenToMulicastChannel(0xdcaffee);
 	}
 	
@@ -124,5 +131,34 @@ public class DCoffee extends javax.swing.JPanel {
 			};
 		}
 		return actionDemandCoffee;
+	}
+
+	public AbstractAction getActionReconnect() {
+		if (actionReconnect == null) {
+			actionReconnect = new AbstractAction("Reconnect") {
+				private static final long serialVersionUID = -3460043336423152790L;
+
+				public void actionPerformed(ActionEvent evt) {
+
+					Connection c = participant.getAssocParticipant()
+							.establishNewConnection("dud73",
+									Connection.DEFAULTPORT);
+					participant.setConnection(c);
+
+					buttonCoffeeIndicator.setAction(getActionDemandCoffee());
+				}
+			};
+		}
+		return actionReconnect;
+	}
+	
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		if (arg0 instanceof Participant){
+			// Connection crashed
+			if (arg1 instanceof IOException){
+				buttonCoffeeIndicator.setAction(getActionReconnect());
+			}
+		}
 	}
 }
